@@ -1,0 +1,26 @@
+.form-input {
+  border: 2px solid var(--accent-dark);
+  outline: none;
+  font-size: 0.9rem;
+  padding: 0.76rem 1.4rem;
+  width: 100%;
+  transition: 0.2s ease-in-out;
+  -webkit-transition: 0.2s ease-in-out;
+  -moz-transition: 0.2s ease-in-out;
+  -ms-transition: 0.2s ease-in-out;
+  -o-transition: 0.2s ease-in-out;
+  border-radius: 3.125rem;
+  -webkit-border-radius: 3.125rem;
+  -moz-border-radius: 3.125rem;
+  -ms-border-radius: 3.125rem;
+  -o-border-radius: 3.125rem;
+}
+.form-input.invalid:focus {
+  border: 2px solid var(--warning);
+}
+.form-input.valid:focus {
+  border: 2px solid var(--success);
+}
+.form-input:focus {
+  border: 2px solid var(--primary);
+}

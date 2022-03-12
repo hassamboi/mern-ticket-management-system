@@ -1,0 +1,123 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: rgb(30, 147, 206);
+  --primary-compliment: #eee8a9;
+  --hover-primary: rgb(33, 160, 224);
+  --bg-primary: rgb(255, 255, 255);
+  --bg-secondary: rgba(30, 147, 206, 0.05);
+  --accent-light: rgb(246, 246, 246);
+  --accent-medium: rgb(240, 240, 240);
+  --accent-dark: rgb(230, 230, 230);
+  --text-secondary: rgb(255, 255, 255);
+  --text-primary: rgb(50, 50, 50);
+  --success: rgb(77, 255, 77);
+  --warning: rgb(255, 183, 51);
+  --error: rgb(255, 102, 102);
+}
+
+::selection {
+  color: var(--text-primary);
+  background-color: var(--primary-compliment);
+}
+
+body {
+  color: var(--text-primary);
+  background-color: #fff;
+  font-family: "Lato", sans-serif;
+}
+
+.container {
+  padding: 0 1rem;
+  max-width: 1288px;
+  margin: auto;
+}
+
+section {
+  padding: 4rem 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.1rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.section-title:before {
+  content: "";
+  background: var(--primary);
+  width: 4.3125rem;
+  height: 0.3125rem;
+  position: absolute;
+  bottom: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+main {
+  margin-top: 5.5rem !important;
+}
+
+.main-events-grid {
+  display: grid;
+  grid-template-columns: 1fr 3.5fr;
+  grid-gap: 4rem;
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+    -webkit-transform: translateY(-20px);
+    -moz-transform: translateY(-20px);
+    -ms-transform: translateY(-20px);
+    -o-transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    -webkit-transform: translateY(0);
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -o-transform: translateY(0);
+  }
+}
+/* mobile */
+/* @media only screen and (max-width: 650px) {
+} */
+
+/* tablet */
+@media only screen and (max-width: 832px) {
+  .main-events-grid {
+    display: flex;
+    flex-direction: column;
+    grid-gap: 1rem;
+  }
+}
+
+/* laptops / smaller screens */
+@media only screen and (max-width: 1200px) {
+  /* global */
+  * {
+    font-size: 90%;
+  }
+  .container {
+    padding: 0 0;
+    max-width: 90%;
+  }
+}

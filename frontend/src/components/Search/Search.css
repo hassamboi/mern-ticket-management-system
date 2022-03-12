@@ -1,0 +1,18 @@
+#events-search fieldset {
+  display: flex;
+  align-items: flex-start;
+  border: 0;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.events-search-input-wrapper {
+  min-width: 40%;
+}
+
+/* tablet */
+@media only screen and (max-width: 832px) {
+  .events-search-input-wrapper {
+    width: calc(100% - 7rem);
+  }
+}
