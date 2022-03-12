@@ -84,7 +84,7 @@ export default function Signup() {
             />
             <p className="error">{errors.password}</p>
 
-            {errors.length > 0 ? errors.map(error => <div className="error">{error}</div>) : ""}
+           
             <Button type="submit" content={"Sign in"} />
           </form>
 

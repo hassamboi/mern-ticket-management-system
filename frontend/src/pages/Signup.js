@@ -136,7 +136,7 @@ export default function Signup() {
               {file && <TiDelete className="delete-icon" onClick={e => setFile(null)} />}
             </div>
 
-            {errors.length > 0 ? errors.map(error => <div className="error">{error}</div>) : ""}
+           
             <Button type="submit" content={"Sign up"} />
           </form>
 
