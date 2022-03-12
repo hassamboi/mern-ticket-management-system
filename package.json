@@ -1,0 +1,28 @@
+{
+  "name": "ticket-management-system",
+  "version": "1.0.0",
+  "description": "Ticket management system for events, workshops, seminars and more.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hassamboi/tms.git"
+  },
+  "author": "Hassam Ud Din",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hassamboi/tms/issues"
+  },
+  "homepage": "https://github.com/hassamboi/tms#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
