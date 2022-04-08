@@ -1,6 +1,15 @@
 const asyncHandler = require('express-async-handler')
 const dbOptions = require('../config/db')
 const mysql = require('mysql')
+const res = require('express/lib/response')
+
+// helper function to query the db
+const query_the_db = async (connection, sql, res) => {
+  await connection.query(sql, (err, results) => {
+    if (err) res.status(500).json({ message: 'Something went wrong' })
+    res.status(200).json(results)
+  })
+}
 
 // @desc    Get events
 // @route   GET /api/events
@@ -8,15 +17,7 @@ const mysql = require('mysql')
 const getEvents = asyncHandler(async (req, res) => {
   const connection = mysql.createConnection(dbOptions)
   const sql = 'SELECT * FROM events'
-
-  connection.query(sql, (err, results, fields) => {
-    if (err) {
-      res.status(503).json({ message: 'Error fetching events' })
-      return
-    }
-    res.status(200).json(results)
-  })
-
+  await query_the_db(connection, sql, res)
   connection.end()
 })
 
@@ -38,15 +39,7 @@ const setEvent = asyncHandler(async (req, res) => {
     eventImg ? `'${eventImg}'` : null
   })`
 
-  connection.query(sql, (err, results, fields) => {
-    if (err) {
-      console.log(err)
-      res.status(500).json({ message: 'Something went wrong' })
-      return
-    }
-    res.status(200).json(results)
-  })
-
+  await query_the_db(connection, sql, res)
   connection.end()
 })
 
@@ -64,9 +57,52 @@ const deleteEvent = asyncHandler(async (req, res) => {
   res.status(200).json({ message: `delete event ${req.params.id}` })
 })
 
+// @desc    Get event categories
+// @route   GET /api/events/category
+// @access  Private
+const getEventCategories = asyncHandler(async (req, res) => {
+  const connection = mysql.createConnection(dbOptions)
+  const sql = 'SELECT * FROM event_categories'
+  await query_the_db(connection, sql, res)
+  connection.end()
+})
+
+// @desc    Set event category
+// @route   POST /api/events/category
+// @access  Private
+const setEventCategory = asyncHandler(async (req, res) => {
+  if (!req.body.categoryName) {
+    res.status(400)
+    throw new Error('Please enter the category name to insert')
+  }
+
+  const connection = mysql.createConnection(dbOptions)
+  const sql = `INSERT INTO event_categories VALUES('${req.body.categoryName}')`
+  await query_the_db(connection, sql, res)
+  connection.end()
+})
+
+// @desc    Delete an event category
+// @route   DELETE /api/events/category
+// @access  Private
+const deleteEventCategory = asyncHandler(async (req, res) => {
+  if (!req.body.categoryName) {
+    res.status(400)
+    throw new Error('Please enter the category name to delete')
+  }
+
+  const connection = mysql.createConnection(dbOptions)
+  const sql = `DELETE FROM event_categories WHERE category_name = '${req.body.categoryName}'`
+  await query_the_db(connection, sql, res)
+  connection.end()
+})
+
 module.exports = {
   getEvents,
   setEvent,
   updateEvent,
   deleteEvent,
+  getEventCategories,
+  setEventCategory,
+  deleteEventCategory,
 }
