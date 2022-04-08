@@ -11,17 +11,6 @@ const app = express()
 
 app.listen(port, () => console.log(`Server listening on port ${port}`))
 
-// connect the database
-const connection = mysql.createConnection(dbOptions)
-connection.connect(err => {
-  if (err) {
-    console.log(`Error connecting to the database`.red.underline)
-    console.log(`${err.stack}`.grey)
-    return
-  }
-  console.log(`Database connected ${connection.config.host}`.cyan.underline)
-})
-
 // middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
