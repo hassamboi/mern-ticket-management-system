@@ -47,19 +47,16 @@ const setEvent = asyncHandler(async (req, res) => {
 // @route   PUT /api/events/:id
 // @access  Private
 const updateEvent = asyncHandler(async (req, res) => {
+  if (!req.body) {
+    res.status(400)
+    throw new Error('Please enter fields to update')
+  }
+
   const connection = mysql.createConnection(dbOptions)
-
-  connection.query(sql, (err, results) => {
-    if (err) res.status(500).json({ message: 'Something went wrong' })
-    if (!results[0]) res.status(404).json({ message: 'Event not found' })
-  })
-
   const column = Object.keys(req.body)[0]
   const value = Object.values(req.body)[0]
-
   sql = `UPDATE events SET ${column} = '${value}' WHERE event_id = ${req.params.id}`
   await query_and_respond(connection, sql, res)
-
   connection.end()
 })
 
@@ -87,13 +84,14 @@ const getEventCategories = asyncHandler(async (req, res) => {
 // @route   POST /api/events/categories
 // @access  Private
 const setEventCategory = asyncHandler(async (req, res) => {
-  if (!req.body.categoryName) {
+  const { categoryName } = req.body
+  if (!categoryName) {
     res.status(400)
     throw new Error('Please enter the category name to insert')
   }
 
   const connection = mysql.createConnection(dbOptions)
-  const sql = `INSERT INTO event_categories VALUES('${req.body.categoryName}')`
+  const sql = `INSERT INTO event_categories VALUES('${categoryName}')`
   await query_and_respond(connection, sql, res)
   connection.end()
 })

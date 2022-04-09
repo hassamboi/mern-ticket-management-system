@@ -1,5 +1,4 @@
 const express = require('express')
-const colors = require('colors')
 const dotenv = require('dotenv').config()
 const dbOptions = require('./config/db')
 const mysql = require('mysql')
