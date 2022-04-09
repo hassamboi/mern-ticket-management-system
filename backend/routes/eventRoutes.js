@@ -12,6 +12,7 @@ const {
 
 router.route('/').get(getEvents).post(setEvent)
 router.route('/:id').put(updateEvent).delete(deleteEvent)
-router.route('/category').get(getEventCategories).post(setEventCategory).delete(deleteEventCategory)
+router.route('/categories').get(getEventCategories).post(setEventCategory)
+router.route('/categories/:id').delete(deleteEventCategory)
 
 module.exports = router
