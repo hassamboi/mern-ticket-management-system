@@ -1,23 +1,15 @@
 const asyncHandler = require('express-async-handler')
 const dbOptions = require('../config/db')
-const mysql = require('mysql')
-const res = require('express/lib/response')
-
-// helper function to query the db and return the results
-const query_and_respond = async (connection, sql, res) => {
-  await connection.query(sql, (err, results) => {
-    if (err) res.status(500).json({ message: 'Something went wrong' })
-    res.status(200).json(results)
-  })
-}
+const mysql = require('mysql2/promise')
 
 // @desc    Get events
 // @route   GET /api/events
 // @access  Public
 const getEvents = asyncHandler(async (req, res) => {
-  const connection = mysql.createConnection(dbOptions)
-  const sql = 'SELECT * FROM events'
-  await query_and_respond(connection, sql, res)
+  const connection = await mysql.createConnection(dbOptions)
+  const sql = 'SELECT * FROM event'
+  const [rows, fields] = await connection.execute(sql)
+  res.status(200).json(rows)
   connection.end()
 })
 
@@ -29,17 +21,25 @@ const setEvent = asyncHandler(async (req, res) => {
 
   if (!name || !venue || !date || !status || !price || !metaDesc || !categoryName) {
     res.status(400)
-    throw new Error('Please enter all fields')
+    throw new Error('Please fill in all the fields')
   }
 
-  const connection = mysql.createConnection(dbOptions)
+  const connection = await mysql.createConnection(dbOptions)
 
-  const sql = `INSERT INTO events (name, venue, date, status, price, meta_desc, category_name, event_img) 
-  VALUES('${name}', '${venue}', '${date}', '${status}', '${price}', '${metaDesc}', '${categoryName}', ${
-    eventImg ? `'${eventImg}'` : null
-  })`
+  const sql =
+    'INSERT INTO event (name, venue, date, status, price, meta_desc, category_name, event_img) VALUES(?, ?, ?, ?, ?, ?, ?, ?)'
 
-  await query_and_respond(connection, sql, res)
+  const [rows, fields] = await connection.execute(sql, [
+    `${name}`,
+    `${venue}`,
+    `${date}`,
+    `${status}`,
+    `${price}`,
+    `${metaDesc}`,
+    `${categoryName}`,
+    `${eventImg ? `${eventImg}` : null}`,
+  ])
+  res.status(200).json(rows)
   connection.end()
 })
 
@@ -52,11 +52,18 @@ const updateEvent = asyncHandler(async (req, res) => {
     throw new Error('Please enter fields to update')
   }
 
-  const connection = mysql.createConnection(dbOptions)
+  const connection = await mysql.createConnection(dbOptions)
   const column = Object.keys(req.body)[0]
   const value = Object.values(req.body)[0]
-  sql = `UPDATE events SET ${column} = '${value}' WHERE event_id = ${req.params.id}`
-  await query_and_respond(connection, sql, res)
+  const sql = `UPDATE event SET ${column} = ? WHERE event_id = ?`
+  const [rows, fields] = await connection.execute(sql, [`${value}`, `${req.params.id}`])
+
+  if (rows.affectedRows === 0) {
+    res.status(404)
+    throw new Error('Resource not found')
+  }
+
+  res.status(200).json(rows)
   connection.end()
 })
 
@@ -64,9 +71,16 @@ const updateEvent = asyncHandler(async (req, res) => {
 // @route   DELETE /api/events/:id
 // @access  Private
 const deleteEvent = asyncHandler(async (req, res) => {
-  const connection = mysql.createConnection(dbOptions)
-  const sql = `DELETE FROM events WHERE event_id = ${req.params.id}`
-  await query_and_respond(connection, sql, res)
+  const connection = await mysql.createConnection(dbOptions)
+  const sql = 'DELETE FROM event WHERE event_id = ?'
+  const [rows, fields] = await connection.execute(sql, [`${req.params.id}`])
+
+  if (rows.affectedRows === 0) {
+    res.status(404)
+    throw new Error('Resource not found')
+  }
+
+  res.status(200).json(rows)
   connection.end()
 })
 
@@ -74,9 +88,10 @@ const deleteEvent = asyncHandler(async (req, res) => {
 // @route   GET /api/events/categories
 // @access  Private
 const getEventCategories = asyncHandler(async (req, res) => {
-  const connection = mysql.createConnection(dbOptions)
-  const sql = 'SELECT * FROM event_categories'
-  await query_and_respond(connection, sql, res)
+  const connection = await mysql.createConnection(dbOptions)
+  const sql = 'SELECT * FROM event_category'
+  const [rows, fields] = await connection.execute(sql)
+  res.status(200).json(rows)
   connection.end()
 })
 
@@ -85,14 +100,16 @@ const getEventCategories = asyncHandler(async (req, res) => {
 // @access  Private
 const setEventCategory = asyncHandler(async (req, res) => {
   const { categoryName } = req.body
+
   if (!categoryName) {
     res.status(400)
     throw new Error('Please enter the category name to insert')
   }
 
-  const connection = mysql.createConnection(dbOptions)
-  const sql = `INSERT INTO event_categories VALUES('${categoryName}')`
-  await query_and_respond(connection, sql, res)
+  const connection = await mysql.createConnection(dbOptions)
+  const sql = 'INSERT INTO event_category(category_name) VALUES(?)'
+  const [rows, fields] = await connection.execute(sql, [`${categoryName}`])
+  res.status(200).json(rows)
   connection.end()
 })
 
@@ -100,10 +117,16 @@ const setEventCategory = asyncHandler(async (req, res) => {
 // @route   DELETE /api/events/categories/:id
 // @access  Private
 const deleteEventCategory = asyncHandler(async (req, res) => {
-  const connection = mysql.createConnection(dbOptions)
-  console.log(req.params.id)
-  const sql = `DELETE FROM event_categories WHERE category_name = '${req.params.id}'`
-  await query_and_respond(connection, sql, res)
+  const connection = await mysql.createConnection(dbOptions)
+  const sql = 'DELETE FROM event_category WHERE category_name=?'
+  const [rows, fields] = await connection.execute(sql, [`${req.params.id}`])
+
+  if (rows.affectedRows === 0) {
+    res.status(404)
+    throw new Error('Resource not found')
+  }
+
+  res.status(200).json(rows)
   connection.end()
 })
 
