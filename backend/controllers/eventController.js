@@ -37,9 +37,10 @@ const setEvent = asyncHandler(async (req, res) => {
     `${price}`,
     `${metaDesc}`,
     `${categoryName}`,
-    `${eventImg ? `${eventImg}` : null}`,
+    eventImg ? `${eventImg}` : null,
   ])
-  res.status(200).json(rows)
+
+  res.status(201).json(rows)
   connection.end()
 })
 
@@ -109,7 +110,7 @@ const setEventCategory = asyncHandler(async (req, res) => {
   const connection = await mysql.createConnection(dbOptions)
   const sql = 'INSERT INTO event_category(category_name) VALUES(?)'
   const [rows, fields] = await connection.execute(sql, [`${categoryName}`])
-  res.status(200).json(rows)
+  res.status(201).json(rows)
   connection.end()
 })
 

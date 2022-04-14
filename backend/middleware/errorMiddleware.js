@@ -7,6 +7,8 @@ const errorHandler = (err, req, res, next) => {
     message: err.message,
     stack: process.env.NODE_ENV === 'production' ? undefined : err.stack,
   })
+
+  next()
 }
 
 module.exports = {
