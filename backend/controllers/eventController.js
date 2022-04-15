@@ -26,6 +26,13 @@ const setEvent = asyncHandler(async (req, res) => {
 
   const connection = await mysql.createConnection(dbOptions)
 
+  const { role_name } = req.user
+  if (role_name === 'user') {
+    res.status(401)
+    throw new Error('User not authorized')
+  }
+
+  console.log(user_role)
   const sql =
     'INSERT INTO event (name, venue, date, status, price, meta_desc, category_name, event_img) VALUES(?, ?, ?, ?, ?, ?, ?, ?)'
 
@@ -53,6 +60,12 @@ const updateEvent = asyncHandler(async (req, res) => {
     throw new Error('Please enter fields to update')
   }
 
+  const { role_name } = req.user
+  if (role_name === 'user') {
+    res.status(401)
+    throw new Error('User not authorized')
+  }
+
   const connection = await mysql.createConnection(dbOptions)
   const column = Object.keys(req.body)[0]
   const value = Object.values(req.body)[0]
@@ -72,6 +85,12 @@ const updateEvent = asyncHandler(async (req, res) => {
 // @route   DELETE /api/events/:id
 // @access  Private
 const deleteEvent = asyncHandler(async (req, res) => {
+  const { role_name } = req.user
+  if (role_name === 'user') {
+    res.status(401)
+    throw new Error('User not authorized')
+  }
+
   const connection = await mysql.createConnection(dbOptions)
   const sql = 'DELETE FROM event WHERE event_id = ?'
   const [rows, fields] = await connection.execute(sql, [`${req.params.id}`])
@@ -87,7 +106,7 @@ const deleteEvent = asyncHandler(async (req, res) => {
 
 // @desc    Get event categories
 // @route   GET /api/events/categories
-// @access  Private
+// @access  Public
 const getEventCategories = asyncHandler(async (req, res) => {
   const connection = await mysql.createConnection(dbOptions)
   const sql = 'SELECT * FROM event_category'
@@ -107,6 +126,12 @@ const setEventCategory = asyncHandler(async (req, res) => {
     throw new Error('Please enter the category name to insert')
   }
 
+  const { role_name } = req.user
+  if (role_name === 'user') {
+    res.status(401)
+    throw new Error('User not authorized')
+  }
+
   const connection = await mysql.createConnection(dbOptions)
   const sql = 'INSERT INTO event_category(category_name) VALUES(?)'
   const [rows, fields] = await connection.execute(sql, [`${categoryName}`])
@@ -118,6 +143,12 @@ const setEventCategory = asyncHandler(async (req, res) => {
 // @route   DELETE /api/events/categories/:id
 // @access  Private
 const deleteEventCategory = asyncHandler(async (req, res) => {
+  const { role_name } = req.user
+  if (role_name === 'user') {
+    res.status(401)
+    throw new Error('User not authorized')
+  }
+
   const connection = await mysql.createConnection(dbOptions)
   const sql = 'DELETE FROM event_category WHERE category_name=?'
   const [rows, fields] = await connection.execute(sql, [`${req.params.id}`])

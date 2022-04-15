@@ -10,9 +10,11 @@ const {
   deleteEventCategory,
 } = require('../controllers/eventController')
 
-router.route('/').get(getEvents).post(setEvent)
-router.route('/:id').put(updateEvent).delete(deleteEvent)
-router.route('/categories').get(getEventCategories).post(setEventCategory)
-router.route('/categories/:id').delete(deleteEventCategory)
+const protect = require('../middleware/authMiddleware')
+
+router.route('/').get(getEvents).post(protect, setEvent)
+router.route('/:id').put(protect, updateEvent).delete(protect, deleteEvent)
+router.route('/categories').get(getEventCategories).post(protect, setEventCategory)
+router.route('/categories/:id').delete(protect, deleteEventCategory)
 
 module.exports = router
