@@ -1,5 +1,5 @@
 const express = require('express')
-const dotenv = require('dotenv').config()
+require('dotenv').config()
 const morgan = require('morgan')
 const { errorHandler } = require('./middleware/errorMiddleware')
 
@@ -17,6 +17,8 @@ app.use(express.urlencoded({ extended: false }))
 // routes
 app.use('/api/events', require('./routes/eventRoutes'))
 app.use('/api/users', require('./routes/userRoutes'))
+app.use('/api/registrations', require('./routes/registrationRoutes'))
+app.use('/api/admin', require('./routes/adminRoutes'))
 
 // handle errors after the api hit
 app.use(errorHandler)

@@ -32,7 +32,6 @@ const setEvent = asyncHandler(async (req, res) => {
     throw new Error('User not authorized')
   }
 
-  console.log(user_role)
   const sql =
     'INSERT INTO event (name, venue, date, status, price, meta_desc, category_name, event_img) VALUES(?, ?, ?, ?, ?, ?, ?, ?)'
 

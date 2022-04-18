@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 const mysql = require('mysql2/promise')
 const dbOptions = require('../config/db')
-const { json } = require('express/lib/response')
 
 // @desc    Register user
 // @route   POST /api/users
