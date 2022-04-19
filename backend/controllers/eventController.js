@@ -7,7 +7,7 @@ const mysql = require('mysql2/promise')
 // @access  Public
 const getEvents = asyncHandler(async (req, res) => {
   const connection = await mysql.createConnection(dbOptions)
-  const sql = 'SELECT * FROM event'
+  const sql = 'SELECT * FROM event ORDER BY date DESC'
   const [rows, fields] = await connection.execute(sql)
   res.status(200).json(rows)
   connection.end()
