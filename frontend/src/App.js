@@ -12,6 +12,7 @@ import Footer from './components/Footer/Footer'
 import Signup from './pages/Signup'
 import Signin from './pages/Signin'
 import EventDetails from './pages/EventDetails'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/events/:id" element={<EventDetails />} />
+          <Route path="/404" element={<NotFound />} />
         </Routes>
         <Footer />
       </BrowserRouter>
