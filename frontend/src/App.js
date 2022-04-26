@@ -1,15 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 // components and pages
-import Navbar from "./components/Navbar/Navbar";
-import Home from "./pages/Home";
-import Events from "./pages/Events";
+import Navbar from './components/Navbar/Navbar'
+import Home from './pages/Home'
+import Events from './pages/Events'
 
 // assets
-import Footer from "./components/Footer/Footer";
-import Signup from "./pages/Signup";
-import Signin from "./pages/Signin";
-import EventDetails from "./pages/EventDetails";
+import Footer from './components/Footer/Footer'
+import Signup from './pages/Signup'
+import Signin from './pages/Signin'
+import EventDetails from './pages/EventDetails'
 
 function App() {
   return (
@@ -25,8 +27,9 @@ function App() {
         </Routes>
         <Footer />
       </BrowserRouter>
+      <ToastContainer />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

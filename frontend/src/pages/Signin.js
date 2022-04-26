@@ -1,55 +1,81 @@
 // components
-import InputField from "../components/Form/InputField";
-import Button from "./../components/Button/Button";
-import ScrollToTop from "../components/ScrollToTop";
-import Avatar from "../components/Avatar/Avatar";
+import InputField from '../components/Form/InputField'
+import Button from './../components/Button/Button'
+import ScrollToTop from '../components/ScrollToTop'
+import Avatar from '../components/Avatar/Avatar'
+import Spinner from './../components/Spinner/Spinner'
 
 // assets
-import "../assets/css/pages/auth.css";
-import AcmLogo from "../assets/images/acm_logo.png";
-import { emailPattern, passwordPattern } from "./../assets/js/patterns";
+import '../assets/css/pages/auth.css'
+import AcmLogo from '../assets/images/acm_logo.png'
+import { emailPattern, passwordPattern } from './../assets/js/patterns'
 
 // react
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { signin, reset } from '../features/auth/authSlice'
 
 // library
-import ScrollAnimation from "react-animate-on-scroll";
+import { toast } from 'react-toastify'
+import ScrollAnimation from 'react-animate-on-scroll'
 
 export default function Signup() {
   const [formValues, setFormValues] = useState({
-    email: "",
-    password: "",
-  });
+    email: '',
+    password: '',
+  })
 
-  const [errors, setErrors] = useState({});
-  const [isSubmittable, setIsSubmittable] = useState(false);
+  const [errors, setErrors] = useState({})
+  const [isSubmittable, setIsSubmittable] = useState(false)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { user, isLoading, isError, isSuccess, message } = useSelector(state => state.auth)
 
+  // After submitting form values, handle state change / responses from the servers
+  useEffect(() => {
+    if (isError) {
+      toast.error(message, { position: 'bottom-right' })
+    }
+
+    if (isSuccess || user) {
+      toast.success('Signed in', { position: 'bottom-right' })
+      navigate('/')
+    }
+
+    dispatch(reset())
+  }, [user, isError, isSuccess, message, navigate, dispatch])
+
+  // Submit the form data
   useEffect(() => {
     if (Object.keys(errors).length === 0 && isSubmittable) {
-      console.log("submitted");
+      dispatch(signin(formValues))
     }
-  }, [errors, isSubmittable]);
+  }, [errors, isSubmittable])
 
   const handleChange = e => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormValues({ ...formValues, [name]: value })
+  }
 
   const validateValues = values => {
-    const currErrors = {};
-    if (!isValid(values.email, emailPattern)) currErrors.email = "Invalid email, example - yourname@yourdomain.edu.pk*";
-    if (!isValid(values.password, passwordPattern)) currErrors.password = "Password must be between 6 and 21 characters*";
-    return currErrors;
-  };
+    const currErrors = {}
+    if (!isValid(values.email, emailPattern)) currErrors.email = 'Invalid email, example - yourname@yourdomain.edu.pk*'
+    if (!isValid(values.password, passwordPattern)) currErrors.password = 'Password must be between 6 and 21 characters*'
+    return currErrors
+  }
 
-  const isValid = (value, regexPattern) => (regexPattern.test(value) ? true : false);
+  const isValid = (value, regexPattern) => (regexPattern.test(value) ? true : false)
 
   const handleSubmit = e => {
-    e.preventDefault();
-    setErrors(validateValues(formValues));
-    setIsSubmittable(true);
-  };
+    e.preventDefault()
+    setErrors(validateValues(formValues))
+    setIsSubmittable(true)
+  }
+
+  if (isLoading) {
+    return <Spinner />
+  }
 
   return (
     <main className="container">
@@ -84,8 +110,7 @@ export default function Signup() {
             />
             <p className="error">{errors.password}</p>
 
-           
-            <Button type="submit" content={"Sign in"} />
+            <Button type="submit" content={'Sign in'} />
           </form>
 
           <p className="auth-switch">
@@ -94,5 +119,5 @@ export default function Signup() {
         </section>
       </ScrollAnimation>
     </main>
-  );
+  )
 }

@@ -43,9 +43,12 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('Invalid user data')
   }
 
-  res.status(201).json(rows)
+  sql = 'SELECT role_name FROM user WHERE email = ?'
+  const [users] = await connection.execute(sql, [`${email}`])
+  const userData = users[0]
+  userData.token = generateToken(userData.user_id)
 
-  connection.end()
+  res.status(201).json(userData)
 })
 
 // @desc    Authenticate a user
@@ -55,14 +58,13 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
   const connection = await mysql.createConnection(dbOptions)
-  const sql = 'SELECT * FROM user WHERE email = ?'
+  const sql = 'SELECT role_name FROM user WHERE email = ?'
   const [rows] = await connection.execute(sql, [`${email}`])
 
   if (rows.length === 0) {
     res.status(400)
     throw new Error('No registered user with this email')
   }
-  console.log(rows)
 
   if (!(await bcrypt.compare(password, rows[0].password))) {
     res.status(400)
@@ -70,7 +72,6 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const user = rows[0]
-  delete user.password
   user.token = generateToken(user.user_id)
 
   res.status(200).json(user)

@@ -1,70 +1,98 @@
 // components
-import InputField from "../components/Form/InputField";
-import Button from "./../components/Button/Button";
-import ScrollToTop from "../components/ScrollToTop";
-import Avatar from "../components/Avatar/Avatar";
+import InputField from '../components/Form/InputField'
+import Button from './../components/Button/Button'
+import ScrollToTop from '../components/ScrollToTop'
+import Avatar from '../components/Avatar/Avatar'
 
 // assets
-import "../assets/css/pages/auth.css";
-import AcmLogo from "../assets/images/acm_logo.png";
-import { emailPattern, passwordPattern, namePattern } from "./../assets/js/patterns";
-import UserImage from "../assets/images/user_placeholder.png";
+import '../assets/css/pages/auth.css'
+import AcmLogo from '../assets/images/acm_logo.png'
+import { emailPattern, passwordPattern, namePattern, phonePattern } from './../assets/js/patterns'
+import UserImage from '../assets/images/user_placeholder.png'
+import Spinner from './../components/Spinner/Spinner'
 
 // react
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { GrUploadOption } from "react-icons/gr";
-import { TiDelete } from "react-icons/ti";
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { GrUploadOption } from 'react-icons/gr'
+import { TiDelete } from 'react-icons/ti'
+import { useSelector, useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import { register, reset } from '../features/auth/authSlice'
 
 // library
-import ScrollAnimation from "react-animate-on-scroll";
+import ScrollAnimation from 'react-animate-on-scroll'
 
 export default function Signup() {
   const [formValues, setFormValues] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phone: '',
+  })
 
-  const [file, setFile] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [isSubmittable, setIsSubmittable] = useState(false);
+  const [file, setFile] = useState(null)
+  const [errors, setErrors] = useState({})
+  const [isSubmittable, setIsSubmittable] = useState(false)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { user, isLoading, isError, isSuccess, message } = useSelector(state => state.auth)
 
+  // After submitting form values, handle state change / responses from the servers
+  useEffect(() => {
+    if (isError) {
+      toast.error(message, { position: 'bottom-right' })
+    }
+
+    if (isSuccess || user) {
+      toast.success('Signed in', { position: 'bottom-right' })
+      navigate('/')
+    }
+
+    dispatch(reset())
+  }, [user, isError, isSuccess, message, navigate, dispatch])
+
+  // Submit form values
   useEffect(() => {
     if (Object.keys(errors).length === 0 && isSubmittable) {
-      console.log("submitted");
+      dispatch(register(formValues))
     }
-  }, [errors, isSubmittable]);
+  }, [errors, isSubmittable])
 
   const handleChange = e => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
+    const { name, value } = e.target
+    setFormValues({ ...formValues, [name]: value })
+  }
 
   const validateValues = values => {
-    const currErrors = {};
+    const currErrors = {}
     if (!isValid(values.firstName, namePattern))
-      currErrors.firstName = "First name must be at least 3 characters long with no special characters*";
+      currErrors.firstName = 'First name must be at least 3 characters long with no special characters*'
     if (!isValid(values.lastName, namePattern))
-      currErrors.lastName = "Last name must be at least 3 characters long with no special characters*";
-    if (!isValid(values.email, emailPattern)) currErrors.email = "Invalid email, example - yourname@yourdomain.edu.pk*";
-    if (!isValid(values.password, passwordPattern)) currErrors.password = "Password must be between 6 and 21 characters*";
-    return currErrors;
-  };
+      currErrors.lastName = 'Last name must be at least 3 characters long with no special characters*'
+    if (!isValid(values.email, emailPattern)) currErrors.email = 'Invalid email, example - yourname@yourdomain.edu.pk*'
+    if (!isValid(values.password, passwordPattern)) currErrors.password = 'Password must be between 6 and 21 characters*'
+    if (!isValid(values.phone, phonePattern)) currErrors.phone = 'Phone number must begin with +92 or 0, followed by 10 digits'
+    return currErrors
+  }
 
-  const isValid = (value, regexPattern) => (regexPattern.test(value) ? true : false);
+  const isValid = (value, regexPattern) => (regexPattern.test(value) ? true : false)
 
   const handleSubmit = e => {
-    e.preventDefault();
-    setErrors(validateValues(formValues));
-    setIsSubmittable(true);
-  };
+    e.preventDefault()
+    setErrors(validateValues(formValues))
+    setIsSubmittable(true)
+  }
 
   const handleFileChange = e => {
-    setFile(URL.createObjectURL(e.target.files[0]));
-    e.target.value = null;
-  };
+    setFile(URL.createObjectURL(e.target.files[0]))
+    e.target.value = null
+  }
+
+  if (isLoading) {
+    return <Spinner />
+  }
 
   return (
     <main className="container">
@@ -119,6 +147,17 @@ export default function Signup() {
             />
             <p className="error">{errors.password}</p>
 
+            <InputField
+              type="tel"
+              name="phone"
+              placeholder="Cell phone number"
+              required={true}
+              pattern={phonePattern}
+              value={formValues.phone}
+              handleChange={handleChange}
+            />
+            <p className="error">{errors.phone}</p>
+
             <div className="custom-file-upload">
               <label>
                 <InputField
@@ -136,8 +175,7 @@ export default function Signup() {
               {file && <TiDelete className="delete-icon" onClick={e => setFile(null)} />}
             </div>
 
-           
-            <Button type="submit" content={"Sign up"} />
+            <Button type="submit" content={'Sign up'} />
           </form>
 
           <p className="auth-switch">
@@ -146,5 +184,5 @@ export default function Signup() {
         </section>
       </ScrollAnimation>
     </main>
-  );
+  )
 }
