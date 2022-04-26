@@ -81,15 +81,7 @@ const loginUser = asyncHandler(async (req, res) => {
 // @route   GET /api/users/me
 // @access  Private
 const getMe = asyncHandler(async (req, res) => {
-  const connection = await mysql.createConnection(dbOptions)
-  const sql = 'SELECT * FROM user WHERE user_id = ?'
-  const [rows] = await connection.execute(sql, [req.user.user_id])
-
-  const user = rows[0]
-  delete user.password
-  delete user.role_name
-
-  res.status(200).json(user)
+  res.status(200).json(req.user)
 })
 
 // helper ftn to generate JWT
