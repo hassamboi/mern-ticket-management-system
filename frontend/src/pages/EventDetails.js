@@ -1,67 +1,120 @@
 // react
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { Fragment, useEffect } from 'react'
 
 // libraries
-import ScrollAnimation from "react-animate-on-scroll";
-import ScrollToTop from "../components/ScrollToTop";
+import ScrollAnimation from 'react-animate-on-scroll'
+import ScrollToTop from '../components/ScrollToTop'
 
 // assets
-import Image from "../assets/images/gaming.png";
-import Button from "./../components/Button/Button";
-import "../assets/css/pages/event_details.css";
+import Image from '../assets/images/gaming.png'
+import Button from './../components/Button/Button'
+import '../assets/css/pages/event_details.css'
+import Spinner from './../components/Spinner/Spinner'
+import useFetch from './../hooks/useFetch'
+import useFetchAuthorized from './../hooks/useFetchAuthorized'
+import monthNames from '../assets/js/monthNames'
+import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { createRegistration, reset } from './../features/registrations/registrationSlice'
 
 export default function EventDetails() {
-  const { id } = useParams(); // get the event id from params
+  const { id } = useParams() // get the event id from params
+  const { user } = useSelector(state => state.auth)
+  const { registrations, isError, message, isSuccess, isLoading } = useSelector(state => state.registrations)
 
-  const handleClick = e => {
-    console.log(e);
-  };
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  // fetch the event with matching id
   useEffect(() => {
-    // console.log(id);
-  });
+    if (!user) {
+      toast.info('Sign in to get ticket', { position: 'bottom-left', theme: 'colored' })
+    }
+  }, [])
+
+  // After creating a registration handle state change / responses from the servers
+  useEffect(() => {
+    if (isError) {
+      toast.error(message, { position: 'bottom-left', theme: 'colored' })
+    }
+    if (isSuccess) {
+      toast.success('Successfully registered', { position: 'bottom-left', theme: 'colored' })
+      navigate('/')
+    }
+    dispatch(reset())
+  }, [registrations, isError, isSuccess, message, navigate, dispatch])
+
+  const handleClick = () => {
+    // make registration here
+    const registrationData = {
+      paymentOption: 'easypaisa',
+      date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      eventId: id,
+    }
+
+    dispatch(createRegistration(registrationData))
+  }
+
+  const { data: event, isLoading: eventLoading } = useFetch(`/api/events/${id}`)
+
+  const { data: registration, isLoading: regLoading } = useFetchAuthorized(
+    `/api/registrations/me/event/${id}`,
+    user ? user.token : user
+  )
+
+  if (isLoading || eventLoading || regLoading) {
+    return <Spinner />
+  }
 
   return (
     <main className="container">
       <ScrollToTop />
-      <ScrollAnimation animateIn="fadeInDown" duration={0.5}>
+      <ScrollAnimation animateIn="fadeInDown">
         <section id="event-details">
-          <div className="event-details-image">
-            <img src={Image} alt="" />
-          </div>
-          <div className="event-details-content">
-            <small className="event-details-category">
-              Entertainment - <span className="event-details-category-upcoming">Upcoming</span>
-            </small>
-            <h1 className="event-details-title">
-              <span>Gaming night</span>
-              <span className="event-details-title-price">$25</span>
-            </h1>
-            <div className="event-details-meta">
-              <div>
-                <h2 className="event-details-meta-title">Date</h2>
-                <p>September 2nd 2019</p>
+          {event && (
+            <Fragment>
+              <div className="event-details-image">
+                <img src={Image} alt="" />
               </div>
-              <div>
-                <h2 className="event-details-meta-title">Time</h2>
-                <p>8:00 PM</p>
+              <div className="event-details-content">
+                <small className="event-details-category">
+                  {event.category_name} - <span className="event-details-category-upcoming">{event.status}</span>
+                </small>
+                <h1 className="event-details-title">
+                  <span>{event.name}</span>
+                  <span className="event-details-title-price">${event.price}</span>
+                </h1>
+                <div className="event-details-meta">
+                  <div>
+                    <h2 className="event-details-meta-title">Date</h2>
+                    <p>
+                      {new Date(event.date).getDate() +
+                        ' ' +
+                        monthNames[new Date(event.date).getMonth()] +
+                        ' ' +
+                        new Date(event.date).getFullYear()}
+                    </p>
+                  </div>
+                  <div>
+                    <h2 className="event-details-meta-title">Time</h2>
+                    <p>{new Date(event.date).toLocaleTimeString('en', { timeStyle: 'short', hour12: true })}</p>
+                  </div>
+                  <div>
+                    <h2 className="event-details-meta-title">Venue</h2>
+                    <p>{event.venue}</p>
+                  </div>
+                </div>
+                <p className="event-details-description">{event.meta_desc}</p>
+                {user && event.status === 'upcoming' && registration && Object.keys(registration).length <= 0 && (
+                  <Button content={'Get Ticket'} handleClick={handleClick} />
+                )}
               </div>
-              <div>
-                <h2 className="event-details-meta-title">Venue</h2>
-                <p>FAST NUCES, Peshawar</p>
-              </div>
-            </div>
-            <p className="event-details-description">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit accusantium fuga magni architecto, alias repellendus
-              aliquid sint! Deserunt dolores ipsam facilis optio aperiam, temporibus vel facere, soluta, tempore sint nam.
-            </p>
-
-            <Button content={"Get Ticket"} />
-          </div>
+            </Fragment>
+          )}
         </section>
       </ScrollAnimation>
     </main>
-  );
+  )
 }

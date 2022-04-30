@@ -8,19 +8,18 @@ import './Navbar.css'
 
 // react
 import { useSelector, useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { signout, reset } from '../../features/auth/authSlice'
 import { toast } from 'react-toastify'
 
 export default function Navbar() {
-  const navigate = useNavigate()
   const dispatch = useDispatch()
   const { user } = useSelector(state => state.auth)
 
   const onSignout = () => {
     dispatch(signout())
     dispatch(reset())
-    toast.info('Signed out', { position: 'bottom-right' })
+    toast.info('Signed out', { position: 'bottom-left', theme: 'colored' })
   }
 
   return (

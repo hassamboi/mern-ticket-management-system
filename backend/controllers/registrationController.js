@@ -4,16 +4,18 @@ const asyncHandler = require('express-async-handler')
 
 // @desc    Register event ticket
 // @route   POST /api/registrations
-// @access  Public
+// @access  Private
 const registerTicket = asyncHandler(async (req, res) => {
   const { paymentOption, date, eventId } = req.body
 
   const connection = await mysql.createConnection(dbOptions)
-  const sql = 'INSERT INTO registration(payment_option, user_id, event_id, date) VALUES(?, ?, ?, ?)'
+  let sql = 'INSERT INTO registration(payment_option, user_id, event_id, date) VALUES(?, ?, ?, ?)'
   const [rows] = await connection.execute(sql, [`${paymentOption}`, req.user.user_id, eventId, `${date}`])
 
-  res.status(201).json(rows)
+  sql = 'SELECT * FROM registration WHERE user_id = ? ORDER BY date DESC LIMIT 1'
+  const [latest] = await connection.execute(sql, [req.user.user_id])
 
+  res.status(201).json(latest[0])
   connection.end()
 })
 
@@ -22,13 +24,23 @@ const registerTicket = asyncHandler(async (req, res) => {
 // @access  Private
 const getMyRegistrations = asyncHandler(async (req, res) => {
   const connection = await mysql.createConnection(dbOptions)
-  const sql = 'SELECT * FROM registrations WHERE user_id = ? ORDER BY date DESC'
+  const sql = 'SELECT * FROM registration WHERE user_id = ? ORDER BY date DESC'
   const [rows] = await connection.execute(sql, [req.user.user_id])
+  res.status(200).json(rows)
+})
 
+// @desc    Get user event ticket/registration for a specific event
+// @route   GET /api/registrations/me/event/:id
+// @access  Private
+const getMyRegistrationOnAnEvent = asyncHandler(async (req, res) => {
+  const connection = await mysql.createConnection(dbOptions)
+  const sql = 'SELECT * FROM registration WHERE user_id = ? AND event_id = ? ORDER BY date DESC'
+  const [rows] = await connection.execute(sql, [req.user.user_id, req.params.id])
   res.status(200).json(rows)
 })
 
 module.exports = {
   registerTicket,
   getMyRegistrations,
+  getMyRegistrationOnAnEvent,
 }

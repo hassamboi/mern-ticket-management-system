@@ -42,11 +42,11 @@ export default function Signup() {
   // After submitting form values, handle state change / responses from the servers
   useEffect(() => {
     if (isError) {
-      toast.error(message, { position: 'bottom-right' })
+      toast.error(message, { position: 'bottom-left', theme: 'colored' })
     }
 
     if (isSuccess || user) {
-      toast.success('Signed in', { position: 'bottom-right' })
+      toast.success('Signed in', { position: 'bottom-left', theme: 'colored' })
       navigate('/')
     }
 

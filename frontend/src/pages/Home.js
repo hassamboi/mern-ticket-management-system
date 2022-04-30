@@ -1,11 +1,11 @@
 // react
-import { Fragment } from "react";
+import { Fragment } from 'react'
 
 // components
-import Services from "../components/Services/Services";
-import Hero from "../components/Hero/Hero";
-import Collaborators from "../components/Collaborators/Collaborators";
-import ScrollToTop from "../components/ScrollToTop";
+import Services from '../components/Services/Services'
+import Hero from '../components/Hero/Hero'
+import Collaborators from '../components/Collaborators/Collaborators'
+import ScrollToTop from '../components/ScrollToTop'
 
 export default function Home() {
   return (
@@ -17,5 +17,5 @@ export default function Home() {
         <Collaborators />
       </main>
     </Fragment>
-  );
+  )
 }

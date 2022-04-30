@@ -8,8 +8,19 @@ const mysql = require('mysql2/promise')
 const getEvents = asyncHandler(async (req, res) => {
   const connection = await mysql.createConnection(dbOptions)
   const sql = 'SELECT * FROM event ORDER BY date DESC'
-  const [rows, fields] = await connection.execute(sql)
+  const [rows] = await connection.execute(sql)
   res.status(200).json(rows)
+  connection.end()
+})
+
+// @desc    Get a single event by id
+// @route   GET /api/events/:id
+// @access  Public
+const getEventById = asyncHandler(async (req, res) => {
+  const connection = await mysql.createConnection(dbOptions)
+  const sql = 'SELECT * FROM event WHERE event_id = ?'
+  const [rows] = await connection.execute(sql, [req.params.id])
+  res.status(200).json(rows[0])
   connection.end()
 })
 
@@ -169,4 +180,5 @@ module.exports = {
   getEventCategories,
   setEventCategory,
   deleteEventCategory,
+  getEventById,
 }

@@ -13,6 +13,7 @@ import Signup from './pages/Signup'
 import Signin from './pages/Signin'
 import EventDetails from './pages/EventDetails'
 import NotFound from './pages/NotFound'
+import UserProfile from './pages/user-panel/UserProfile'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/404" element={<NotFound />} />
+          <Route path="/user/panel" element={<UserProfile />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
         <Footer />

@@ -43,11 +43,11 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error('Invalid user data')
   }
 
-  sql = 'SELECT role_name FROM user WHERE email = ?'
+  sql = 'SELECT user_id, role_name FROM user WHERE email = ?'
   const [users] = await connection.execute(sql, [`${email}`])
   const userData = users[0]
   userData.token = generateToken(userData.user_id)
-
+  delete userData.user_id
   res.status(201).json(userData)
 })
 
@@ -58,7 +58,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
   const connection = await mysql.createConnection(dbOptions)
-  const sql = 'SELECT role_name FROM user WHERE email = ?'
+  const sql = 'SELECT user_id, role_name, password FROM user WHERE email = ?'
   const [rows] = await connection.execute(sql, [`${email}`])
 
   if (rows.length === 0) {
@@ -73,6 +73,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const user = rows[0]
   user.token = generateToken(user.user_id)
+  delete user.password
+  delete user.user_id
 
   res.status(200).json(user)
 })
