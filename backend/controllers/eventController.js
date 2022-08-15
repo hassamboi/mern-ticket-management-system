@@ -57,7 +57,7 @@ const setEvent = asyncHandler(async (req, res) => {
     eventImg ? `${eventImg}` : null,
   ])
 
-  res.status(201).json(rows)
+  res.status(201).json({ msg: 'Successfully created an event' })
   connection.end()
 })
 
@@ -87,7 +87,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     throw new Error('Resource not found')
   }
 
-  res.status(200).json(rows)
+  res.status(200).json({ msg: 'Successfully updated an event' })
   connection.end()
 })
 
@@ -110,7 +110,7 @@ const deleteEvent = asyncHandler(async (req, res) => {
     throw new Error('Resource not found')
   }
 
-  res.status(200).json(rows)
+  res.status(200).json({ msg: 'Successfully deleted an event' })
   connection.end()
 })
 
@@ -145,7 +145,7 @@ const setEventCategory = asyncHandler(async (req, res) => {
   const connection = await mysql.createConnection(dbOptions)
   const sql = 'INSERT INTO event_category(category_name) VALUES(?)'
   const [rows, fields] = await connection.execute(sql, [`${categoryName}`])
-  res.status(201).json(rows)
+  res.status(201).json({ msg: 'Successfully created an event category' })
   connection.end()
 })
 
@@ -168,7 +168,7 @@ const deleteEventCategory = asyncHandler(async (req, res) => {
     throw new Error('Resource not found')
   }
 
-  res.status(200).json(rows)
+  res.status(200).json({ msg: 'Successfully deleted an event category' })
   connection.end()
 })
 

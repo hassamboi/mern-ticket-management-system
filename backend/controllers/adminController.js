@@ -27,7 +27,7 @@ const updateUser = asyncHandler(async (req, res) => {
     throw new Error('Resource not found')
   }
 
-  res.status(200).json(rows)
+  res.status(200).json({ msg: 'Successfully updated user data' })
   connection.end()
 })
 
@@ -49,7 +49,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new Error('Resource not found')
   }
 
-  res.status(200).json(rows)
+  res.status(200).json({ msg: 'Successfully deleted user' })
 
   connection.end()
 })
@@ -94,7 +94,7 @@ const updateRegistration = asyncHandler(async (req, res) => {
     throw new Error('Resource not found')
   }
 
-  res.status(200).json(rows)
+  res.status(200).json({ msg: 'Successfully updated ticket registration' })
   connection.end()
 })
 
@@ -116,7 +116,7 @@ const deleteRegistration = asyncHandler(async (req, res) => {
     throw new Error('Resource not found')
   }
 
-  res.status(200).json(rows)
+  res.status(200).json({ msg: 'Successfully deleted ticket registration' })
   connection.end()
 })
 
